@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AppProvider } from './context/AppContext';
 import { AppShell } from './components/layout/AppShell';
@@ -61,7 +61,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <AppProvider>
-      <BrowserRouter>
+      <HashRouter>
         <AppRoutes />
         <Toaster
           position="top-right"
@@ -75,7 +75,7 @@ export default function App() {
             },
           }}
         />
-      </BrowserRouter>
+      </HashRouter>
     </AppProvider>
   );
 }
