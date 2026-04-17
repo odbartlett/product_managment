@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { User, ChecklistTask, TimeSlot, SharedItem, Announcement, Resource, FreeItem, AppState } from '../types';
+import type { User, ChecklistTask, TimeSlot, SharedItem, Announcement, Resource, FreeItem, RoommateMessage, AppState } from '../types';
 
 const ALEX_ID = 'user-alex-001';
 const JORDAN_ID = 'user-jordan-002';
@@ -150,6 +150,7 @@ export const mockSharedItems: SharedItem[] = [
     claimedByUserId: ALEX_ID,
     claimedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
     roomKey: ROOM_KEY,
+    price: 149.99,
   },
   {
     id: 'item-microwave',
@@ -159,6 +160,7 @@ export const mockSharedItems: SharedItem[] = [
     claimedByUserId: null,
     claimedAt: null,
     roomKey: ROOM_KEY,
+    price: null,
   },
   {
     id: 'item-printer',
@@ -168,6 +170,7 @@ export const mockSharedItems: SharedItem[] = [
     claimedByUserId: null,
     claimedAt: null,
     roomKey: ROOM_KEY,
+    price: null,
   },
   {
     id: 'item-coffee',
@@ -177,6 +180,7 @@ export const mockSharedItems: SharedItem[] = [
     claimedByUserId: JORDAN_ID,
     claimedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
     roomKey: ROOM_KEY,
+    price: 49.99,
   },
   {
     id: 'item-airpurifier',
@@ -186,6 +190,7 @@ export const mockSharedItems: SharedItem[] = [
     claimedByUserId: null,
     claimedAt: null,
     roomKey: ROOM_KEY,
+    price: null,
   },
   {
     id: 'item-tv',
@@ -195,6 +200,7 @@ export const mockSharedItems: SharedItem[] = [
     claimedByUserId: null,
     claimedAt: null,
     roomKey: ROOM_KEY,
+    price: null,
   },
 ];
 
@@ -377,6 +383,91 @@ export const mockTasks: ChecklistTask[] = [
     moveType: 'move-in',
     sortOrder: 12,
   },
+  // Alex's move-out tasks
+  {
+    id: uuidv4(),
+    userId: ALEX_ID,
+    category: 'housing',
+    title: 'Schedule Move-Out Inspection',
+    description: 'Book your room inspection appointment with housing staff.',
+    status: 'pending',
+    priority: 'urgent',
+    dueDate: new Date(new Date(MOVE_DATE).getTime() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    completedAt: null,
+    isRequired: true,
+    moveType: 'move-out',
+    sortOrder: 1,
+  },
+  {
+    id: uuidv4(),
+    userId: ALEX_ID,
+    category: 'packing',
+    title: 'Start Packing Non-Essentials',
+    description: "Begin packing items you won't need in the last week.",
+    status: 'pending',
+    priority: 'medium',
+    dueDate: new Date(new Date(MOVE_DATE).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    completedAt: null,
+    isRequired: false,
+    moveType: 'move-out',
+    sortOrder: 2,
+  },
+  {
+    id: uuidv4(),
+    userId: ALEX_ID,
+    category: 'housing',
+    title: 'Clean Room Thoroughly',
+    description: 'Deep clean all surfaces, floors, and bathroom to avoid damage charges.',
+    status: 'pending',
+    priority: 'high',
+    dueDate: new Date(new Date(MOVE_DATE).getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    completedAt: null,
+    isRequired: true,
+    moveType: 'move-out',
+    sortOrder: 3,
+  },
+  {
+    id: uuidv4(),
+    userId: ALEX_ID,
+    category: 'paperwork',
+    title: 'Return Room Keys',
+    description: 'Return all keys and access cards to the housing office.',
+    status: 'pending',
+    priority: 'urgent',
+    dueDate: new Date(MOVE_DATE).toISOString(),
+    completedAt: null,
+    isRequired: true,
+    moveType: 'move-out',
+    sortOrder: 4,
+  },
+  {
+    id: uuidv4(),
+    userId: ALEX_ID,
+    category: 'utilities',
+    title: 'Cancel/Transfer Subscriptions',
+    description: 'Update address for any subscriptions and cancel campus-specific services.',
+    status: 'pending',
+    priority: 'medium',
+    dueDate: new Date(new Date(MOVE_DATE).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    completedAt: null,
+    isRequired: false,
+    moveType: 'move-out',
+    sortOrder: 5,
+  },
+  {
+    id: uuidv4(),
+    userId: ALEX_ID,
+    category: 'financial',
+    title: 'Claim Security Deposit',
+    description: 'Ensure your deposit return is processed after successful inspection.',
+    status: 'pending',
+    priority: 'high',
+    dueDate: new Date(new Date(MOVE_DATE).getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    completedAt: null,
+    isRequired: false,
+    moveType: 'move-out',
+    sortOrder: 6,
+  },
   // Jordan's tasks
   {
     id: uuidv4(),
@@ -418,6 +509,49 @@ export const mockTasks: ChecklistTask[] = [
     completedAt: null,
     isRequired: true,
     moveType: 'move-in',
+    sortOrder: 3,
+  },
+  // Jordan's move-out tasks
+  {
+    id: uuidv4(),
+    userId: JORDAN_ID,
+    category: 'housing',
+    title: 'Schedule Move-Out Inspection',
+    description: 'Book your room inspection appointment with housing staff.',
+    status: 'pending',
+    priority: 'urgent',
+    dueDate: new Date(new Date(MOVE_DATE).getTime() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    completedAt: null,
+    isRequired: true,
+    moveType: 'move-out',
+    sortOrder: 1,
+  },
+  {
+    id: uuidv4(),
+    userId: JORDAN_ID,
+    category: 'housing',
+    title: 'Clean Room Thoroughly',
+    description: 'Deep clean all surfaces, floors, and bathroom to avoid damage charges.',
+    status: 'pending',
+    priority: 'high',
+    dueDate: new Date(new Date(MOVE_DATE).getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    completedAt: null,
+    isRequired: true,
+    moveType: 'move-out',
+    sortOrder: 2,
+  },
+  {
+    id: uuidv4(),
+    userId: JORDAN_ID,
+    category: 'paperwork',
+    title: 'Return Room Keys',
+    description: 'Return all keys and access cards to the housing office.',
+    status: 'pending',
+    priority: 'urgent',
+    dueDate: new Date(MOVE_DATE).toISOString(),
+    completedAt: null,
+    isRequired: true,
+    moveType: 'move-out',
     sortOrder: 3,
   },
 ];
@@ -516,6 +650,45 @@ export const mockFreeItems: FreeItem[] = [
   },
 ];
 
+export const mockMessages: RoommateMessage[] = [
+  {
+    id: uuidv4(),
+    roomKey: ROOM_KEY,
+    senderId: JORDAN_ID,
+    senderName: 'Jordan Kim',
+    senderInitials: 'JK',
+    text: "Hey! I just claimed the coffee maker — I have one from last year so I'll bring it.",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+  },
+  {
+    id: uuidv4(),
+    roomKey: ROOM_KEY,
+    senderId: ALEX_ID,
+    senderName: 'Alex Rivera',
+    senderInitials: 'AR',
+    text: "Perfect, I was going to grab one anyway. I already have a mini fridge claimed.",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 47).toISOString(),
+  },
+  {
+    id: uuidv4(),
+    roomKey: ROOM_KEY,
+    senderId: JORDAN_ID,
+    senderName: 'Jordan Kim',
+    senderInitials: 'JK',
+    text: "Should we split the cost of a microwave? I can order one if you chip in half.",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+  },
+  {
+    id: uuidv4(),
+    roomKey: ROOM_KEY,
+    senderId: ALEX_ID,
+    senderName: 'Alex Rivera',
+    senderInitials: 'AR',
+    text: "Sounds good! Let's do it. Check the shared items tab to claim it once you order.",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 23).toISOString(),
+  },
+];
+
 export function getSeedData(): Partial<AppState> {
   return {
     users: mockUsers,
@@ -526,5 +699,6 @@ export function getSeedData(): Partial<AppState> {
     resources: mockResources,
     freeItems: mockFreeItems,
     notifications: [],
+    messages: mockMessages,
   };
 }

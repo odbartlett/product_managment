@@ -22,6 +22,7 @@ function loadInitialState(): AppState {
   const notifications = storageGet(STORAGE_KEYS.NOTIFICATIONS, []);
   const freeItems = storageGet(STORAGE_KEYS.FREE_ITEMS, []);
   const resources = storageGet(STORAGE_KEYS.RESOURCES, []);
+  const messages = storageGet(STORAGE_KEYS.MESSAGES, []);
 
   const state: AppState = {
     session,
@@ -33,6 +34,7 @@ function loadInitialState(): AppState {
     notifications,
     freeItems,
     resources,
+    messages,
   };
 
   if (!isSeeded) {
@@ -45,6 +47,7 @@ function loadInitialState(): AppState {
     storageSet(STORAGE_KEYS.ANNOUNCEMENTS, seed.announcements ?? []);
     storageSet(STORAGE_KEYS.FREE_ITEMS, seed.freeItems ?? []);
     storageSet(STORAGE_KEYS.RESOURCES, seed.resources ?? []);
+    storageSet(STORAGE_KEYS.MESSAGES, seed.messages ?? []);
     return { ...state, ...seed };
   }
 

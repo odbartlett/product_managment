@@ -58,6 +58,17 @@ export interface SharedItem {
   claimedByUserId: string | null;
   claimedAt: string | null;
   roomKey: string;
+  price: number | null;
+}
+
+export interface RoommateMessage {
+  id: string;
+  roomKey: string;
+  senderId: string;
+  senderName: string;
+  senderInitials: string;
+  text: string;
+  createdAt: string;
 }
 
 export interface Announcement {
@@ -121,6 +132,7 @@ export interface AppState {
   resources: Resource[];
   freeItems: FreeItem[];
   notifications: Notification[];
+  messages: RoommateMessage[];
 }
 
 export type AppAction =
@@ -133,6 +145,9 @@ export type AppAction =
   | { type: 'UNBOOK_SLOT'; payload: { slotId: string; userId: string } }
   | { type: 'CLAIM_ITEM'; payload: { itemId: string; userId: string } }
   | { type: 'UNCLAIM_ITEM'; payload: { itemId: string } }
+  | { type: 'SET_ITEM_PRICE'; payload: { itemId: string; price: number | null } }
+  | { type: 'ADD_SHARED_ITEM'; payload: SharedItem }
+  | { type: 'SEND_ROOMMATE_MESSAGE'; payload: RoommateMessage }
   | { type: 'ADD_ANNOUNCEMENT'; payload: Announcement }
   | { type: 'SEED_DATA'; payload: Partial<AppState> }
   | { type: 'CLAIM_FREE_ITEM'; payload: { itemId: string; userId: string } }

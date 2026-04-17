@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
   FREE_ITEMS: `${PREFIX}freeitems`,
   RESOURCES: `${PREFIX}resources`,
   SEEDED: `${PREFIX}seeded`,
+  MESSAGES: `${PREFIX}messages`,
 } as const;
 
 export function storageGet<T>(key: string, fallback: T): T {

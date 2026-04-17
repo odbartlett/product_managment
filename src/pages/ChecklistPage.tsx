@@ -23,7 +23,7 @@ export default function ChecklistPage() {
 
   if (!currentUser) return null;
 
-  const { tasks, byCategory, progress, total, completed, toggleStatus } = useChecklist(currentUser.id);
+  const { tasks, byCategory, progress, total, completed, toggleStatus } = useChecklist(currentUser.id, 'move-in');
 
   const filteredByCategory = Object.entries(byCategory).reduce<Record<string, typeof tasks>>(
     (acc, [cat, catTasks]) => {

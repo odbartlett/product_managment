@@ -11,6 +11,7 @@ function persist(state: AppState) {
   storageSet(STORAGE_KEYS.FREE_ITEMS, state.freeItems);
   storageSet(STORAGE_KEYS.RESOURCES, state.resources);
   storageSet(STORAGE_KEYS.NOTIFICATIONS, state.notifications);
+  storageSet(STORAGE_KEYS.MESSAGES, state.messages);
 }
 
 export function appReducer(state: AppState, action: AppAction): AppState {
@@ -96,6 +97,28 @@ export function appReducer(state: AppState, action: AppAction): AppState {
             ? { ...item, claimedByUserId: null, claimedAt: null }
             : item
         ),
+      };
+      break;
+
+    case 'ADD_SHARED_ITEM':
+      next = { ...state, sharedItems: [...state.sharedItems, action.payload] };
+      break;
+
+    case 'SET_ITEM_PRICE':
+      next = {
+        ...state,
+        sharedItems: state.sharedItems.map((item) =>
+          item.id === action.payload.itemId
+            ? { ...item, price: action.payload.price }
+            : item
+        ),
+      };
+      break;
+
+    case 'SEND_ROOMMATE_MESSAGE':
+      next = {
+        ...state,
+        messages: [...(state.messages ?? []), action.payload],
       };
       break;
 

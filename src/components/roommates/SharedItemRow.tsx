@@ -1,5 +1,5 @@
-import React from 'react';
-import { Check, X, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, X, User, DollarSign } from 'lucide-react';
 import type { SharedItem } from '../../types';
 import { Button } from '../ui/Button';
 import { cn } from '../../lib/utils';
@@ -14,10 +14,21 @@ interface SharedItemRowProps {
 }
 
 export function SharedItemRow({ item, currentUserId, onClaim, onUnclaim }: SharedItemRowProps) {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
   const isMine = item.claimedByUserId === currentUserId;
   const isClaimed = item.claimedByUserId !== null;
   const claimer = isClaimed ? state.users.find((u) => u.id === item.claimedByUserId) : null;
+  const [priceInput, setPriceInput] = useState(item.price != null ? String(item.price) : '');
+  const [editingPrice, setEditingPrice] = useState(false);
+
+  const handlePriceSave = () => {
+    const parsed = parseFloat(priceInput);
+    dispatch({
+      type: 'SET_ITEM_PRICE',
+      payload: { itemId: item.id, price: isNaN(parsed) ? null : parsed },
+    });
+    setEditingPrice(false);
+  };
 
   return (
     <div className={cn(
@@ -35,6 +46,46 @@ export function SharedItemRow({ item, currentUserId, onClaim, onUnclaim }: Share
               Claimed by <strong>{claimer.name}</strong>
               {item.claimedAt && ` on ${formatDate(item.claimedAt)}`}
             </span>
+          </div>
+        )}
+        {/* Price row */}
+        {isClaimed && (
+          <div className="mt-1.5">
+            {isMine ? (
+              editingPrice ? (
+                <div className="flex items-center gap-1">
+                  <DollarSign size={11} className="text-[#6B7280]" />
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    value={priceInput}
+                    onChange={(e) => setPriceInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handlePriceSave()}
+                    autoFocus
+                    className="w-20 text-xs border border-[#3B6FE8] rounded px-1.5 py-0.5 outline-none"
+                  />
+                  <button onClick={handlePriceSave} className="text-xs text-[#3B6FE8] font-medium">Save</button>
+                  <button onClick={() => setEditingPrice(false)} className="text-xs text-[#6B7280]">Cancel</button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setEditingPrice(true)}
+                  className="flex items-center gap-1 text-xs text-[#3B6FE8] hover:underline"
+                >
+                  <DollarSign size={11} />
+                  {item.price != null ? `$${item.price.toFixed(2)}` : 'Add price'}
+                </button>
+              )
+            ) : (
+              item.price != null && (
+                <span className="flex items-center gap-1 text-xs text-[#6B7280]">
+                  <DollarSign size={11} />
+                  ${item.price.toFixed(2)}
+                </span>
+              )
+            )}
           </div>
         )}
       </div>

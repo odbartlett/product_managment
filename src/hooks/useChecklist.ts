@@ -1,10 +1,12 @@
 import { useAppContext } from '../context/AppContext';
-import type { ChecklistTask, TaskCategory, TaskStatus } from '../types';
+import type { ChecklistTask, MoveType, TaskCategory, TaskStatus } from '../types';
 
-export function useChecklist(userId: string) {
+export function useChecklist(userId: string, moveType?: MoveType) {
   const { state, dispatch } = useAppContext();
 
-  const tasks = state.tasks.filter((t) => t.userId === userId);
+  const tasks = state.tasks.filter(
+    (t) => t.userId === userId && (moveType ? t.moveType === moveType : true)
+  );
   const total = tasks.length;
   const completed = tasks.filter((t) => t.status === 'completed').length;
   const progress = total > 0 ? Math.round((completed / total) * 100) : 0;

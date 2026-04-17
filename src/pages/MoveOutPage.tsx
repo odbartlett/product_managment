@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
-import { Package, Plus, Tag, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Package, Plus, Tag, MapPin, ClipboardList, Filter } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAppContext } from '../context/AppContext';
+import { useChecklist } from '../hooks/useChecklist';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { Progress } from '../components/ui/Progress';
 import { Modal } from '../components/ui/Modal';
 import { Input, Textarea } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
-import type { FreeItem, ItemCondition } from '../types';
+import { ChecklistGroup } from '../components/checklist/ChecklistGroup';
+import { generateTasksForUser } from '../constants/checklist';
+import type { FreeItem, ItemCondition, TaskCategory, TaskStatus } from '../types';
 import { formatDate } from '../lib/dateUtils';
 import { cn } from '../lib/utils';
 import { toast } from 'react-hot-toast';
@@ -26,12 +30,47 @@ const DONATION_LOCATIONS = [
   { name: 'Campus Thrift Store', detail: 'Behind the gym, accepts furniture and electronics' },
 ];
 
+const STATUS_FILTERS: { value: TaskStatus | 'all'; label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'in-progress', label: 'In Progress' },
+  { value: 'completed', label: 'Done' },
+];
+
 export default function MoveOutPage() {
   const { currentUser, state, dispatch } = useAppContext();
   const [addOpen, setAddOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all');
   const [form, setForm] = useState({ title: '', description: '', condition: 'good' as ItemCondition });
 
+  const { tasks: moveOutTasks, byCategory, progress, total, completed, toggleStatus } = useChecklist(
+    currentUser?.id ?? '',
+    'move-out'
+  );
+
+  useEffect(() => {
+    if (!currentUser) return;
+    const hasMovOutTasks = state.tasks.some(
+      (t) => t.userId === currentUser.id && t.moveType === 'move-out'
+    );
+    if (!hasMovOutTasks) {
+      const generated = generateTasksForUser(currentUser.id, 'move-out', currentUser.moveDate);
+      generated.forEach((t) => {
+        dispatch({ type: 'ADD_TASK', payload: { ...t, id: uuidv4() } });
+      });
+    }
+  }, [currentUser?.id]);
+
   if (!currentUser) return null;
+
+  const filteredByCategory = Object.entries(byCategory).reduce<Record<string, typeof moveOutTasks>>(
+    (acc, [cat, catTasks]) => {
+      const filtered = statusFilter === 'all' ? catTasks : catTasks.filter((t) => t.status === statusFilter);
+      if (filtered.length > 0) acc[cat] = filtered;
+      return acc;
+    },
+    {}
+  );
 
   const freeItems = state.freeItems;
   const available = freeItems.filter((i) => i.isAvailable);
@@ -66,13 +105,72 @@ export default function MoveOutPage() {
     <div>
       <PageHeader
         title="Move Out"
-        subtitle="Free items from departing students + donation drop-off locations"
+        subtitle="Checklist, free items from departing students, and donation drop-offs"
         action={
           <Button size="sm" onClick={() => setAddOpen(true)} className="gap-1">
             <Plus size={14} /> List Item
           </Button>
         }
       />
+
+      {/* Move-out checklist */}
+      <div className="mb-8">
+        <div className="flex items-center gap-2 mb-3">
+          <ClipboardList size={16} className="text-[#3B6FE8]" />
+          <h2 className="font-semibold text-[#111827]">Move-Out Checklist</h2>
+        </div>
+
+        <Card className="mb-4">
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-[#111827]">Overall Progress</span>
+              <span className="text-sm font-semibold text-[#3B6FE8]">{progress}%</span>
+            </div>
+            <Progress value={progress} className="h-2.5" />
+            <div className="flex items-center gap-4 mt-2">
+              <span className="text-xs text-[#6B7280]">{completed} of {total} tasks complete</span>
+              <Badge variant="success">{completed} done</Badge>
+              <Badge variant="warning">{total - completed} remaining</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
+          <Filter size={14} className="text-[#6B7280] flex-shrink-0" />
+          {STATUS_FILTERS.map(({ value, label }) => (
+            <button
+              key={value}
+              onClick={() => setStatusFilter(value)}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all',
+                statusFilter === value
+                  ? 'bg-[#3B6FE8] text-white'
+                  : 'bg-white border border-[#E4E7ED] text-[#6B7280] hover:border-[#3B6FE8]/40'
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {Object.entries(filteredByCategory).map(([category, catTasks]) => (
+            <ChecklistGroup
+              key={category}
+              category={category as TaskCategory}
+              tasks={[...catTasks].sort((a, b) => a.sortOrder - b.sortOrder)}
+              onToggle={toggleStatus}
+              defaultOpen
+            />
+          ))}
+          {Object.keys(filteredByCategory).length === 0 && (
+            <div className="text-center py-8 text-[#6B7280]">
+              <div className="text-4xl mb-3">✅</div>
+              <p className="font-medium">No tasks match this filter</p>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Free items */}
       <div className="mb-8">
